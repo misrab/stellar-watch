@@ -42,13 +42,13 @@ func listenToRequests(dbmap *gorp.DbMap) {
 		// return all
 		if from ==0 || to == 0 {
     		_, err := dbmap.Select(&amounts, "select * from amounts order by id")
-    		Respond(amounts, err, res)
+    		Respond(combineAmounts(amounts), err, res)
     		return
 		}
 
 		// otherwise get range
 		_, err := dbmap.Select(&amounts, "select * from amounts where created > $1 and created < $2 order by id", from, to)
-    	Respond(amounts, err, res)
+    	Respond(combineAmounts(amounts), err, res)
     	return
     }).Methods("GET")
 
@@ -59,6 +59,20 @@ func listenToRequests(dbmap *gorp.DbMap) {
 }
 
 
+func combineMaps(amounts []Amounts) {
+	// aggregate := make(map[string]int)
+	m := make(map[string]int)
+
+	for a := range amounts {
+		// get map
+		byt := []byte(a.Json)
+		if err := json.Unmarshal(byt, &dat); err != nil {
+	        panic(err)
+	    }
+
+	    log.Println(m)
+	}
+}
 
 
 
