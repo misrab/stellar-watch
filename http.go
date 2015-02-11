@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"time"
+	"strconv"
 	
 	"net/http"
 	"encoding/json"
@@ -33,20 +34,20 @@ func listenToRequests(dbmap *gorp.DbMap) {
     
 	router.HandleFunc("/amounts", func(res http.ResponseWriter, req *http.Request) {
 		// date parameters
-		vars := mux.Vars(req)
-		from := vars["from"]
-		to := vars["to"]
+		// vars := mux.Vars(req)
+		from, _ := strconv.Atoi(req.FormValue("from"))
+		to, _ := strconv.Atoi(req.FormValue("to"))
 		var amounts []Amounts
 
 		// return all
-		if from == "" || to == "" {
+		if from ==0 || to == 0 {
     		_, err := dbmap.Select(&amounts, "select * from amounts order by id")
     		Respond(amounts, err, res)
     		return
 		}
 
 		// otherwise get range
-		_, err := dbmap.Select(&amounts, "select * from amounts order by id where created > $1 and created < $2", from, to)
+		_, err := dbmap.Select(&amounts, "select * from amounts where created > $1 and created < $2 order by id", from, to)
     	Respond(amounts, err, res)
     	return
     }).Methods("GET")
