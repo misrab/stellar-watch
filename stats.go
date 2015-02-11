@@ -47,6 +47,9 @@ func saveBuckets(buckets *map[int]int, dbmap *gorp.DbMap) {
 		mstring[strconv.Itoa(k)] = v
 	}
 
+	// now reset buckets
+	*buckets = initialiseBuckets()
+
 
 	// first convert to json string
 	json, err := json.Marshal(mstring)
